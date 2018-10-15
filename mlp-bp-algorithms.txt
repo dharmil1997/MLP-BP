@@ -1,0 +1,80 @@
+
+// 'net' array (size = 3) stores weighted sums - i.e. weights by inputs
+//		indices 0 and 1 store weighted sums of hidden layer neurons
+//		index 2 stores weighted sums of output layer neuron
+// 'ao' array (size = 3) stores activation outputs
+//		indices 0 and 1 store activation outputs of hidden layer neurons
+//		index 2 stores activation output of output layer neuron
+// 'delta' array (size = 3) stores error values
+//		indices 0 and 1 store error values of hidden layer neurons
+//		index 2 stores error values of output layer neuron
+// wrow ( = 3) is the number of weight matrix rows
+// wcol ( = 3) is the number of weight matrix columns
+
+// ANN FEED FORWARD OPERATIONS
+
+// sigmoid activation function
+float activation(float netval)
+    return (1.0/(1.0 + (exp((-k)*netval))))
+
+// calculate 'net' and 'ao' for hidden layer neurons
+for i = 0 to wrow-1
+	for j = 0 to wcol
+		// you will need to determine the index of the input array
+		// based on how you stored your inputs when read from file
+		net[i] = net[i] + w[i][j] * input[?]
+	end j for
+
+	// apply sigmoid fn to get actual output
+	ao[i] = activation(net[i])
+end i for
+
+// calculate 'net' and 'ao' for output layer neuron
+for j = 0 to wcol
+	if (j == 0) // hidden layer bias
+		net[2] = w[2][0] * hbias
+	else
+		// for each hln into this oln, sum the weight by input
+		net[2] = net[2] + w[2][j] * ao[j-1]
+
+	// apply sigmoid fn to get actual output
+	if (j == wcol-1)
+		ao[2] = activation(net[2])
+end j for
+
+
+// ERROR CALCULATION
+
+// calculate error value for output layer neuron
+delta[2] = ao[2] * (1.0 - ao[2]) * (target - ao[2])
+
+// calculate error values for hidden layer neurons
+float delta_sum = 0.0
+int l = 1 // number of output layers
+for int k = 1 to k <= l
+	delta_sum = delta_sum + delta[2] * w[2][k+1]
+end k for
+
+for int i = 0 to wrow-1
+	delta[i] = ao[h] * (1.0-ao[i]) * delta_sum
+end i for
+
+
+// BACK PROPAGATION
+
+// UPDATE WEIGHTS - hidden to output layer
+for (int i = 0 to wcol
+	if (i == 0) // hidden layer bias
+		w[2][0] = w[2][0] + gain * delta[2] * hbias
+	else
+		w[2][i] = w[2][i] + gain * delta[2] * ao[i-1]
+end i for
+
+// UPDATE WEIGHTS - input to hidden layer
+for i = 0 to wrow-1
+	for j = 0 to wcol
+		// you will need to determine the index of the input array
+		// based on how you stored your inputs when read from file
+		w[i][j] = w[i][j] + gain * delta[i] * input[?]
+	end j for
+end i for
